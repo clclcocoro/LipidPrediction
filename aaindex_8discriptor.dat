@@ -1,0 +1,337 @@
+H CIDH920101
+D Normalized hydrophobicity scales for alpha-proteins (Cid et al., 1992)
+R LIT:1817105b PMID:1518784
+A Cid, H., Bunster, M., Canales, M. and Gazitua, F.
+T Hydrophobicity and structural classes in proteins
+J Protein Engineering 5, 373-375 (1992)
+C CIDH920102    0.921  CIDH920105    0.921  NISK860101    0.882
+  WERD780101    0.878  CIDH920103    0.872  RADA880108    0.858
+  BASU050102    0.858  ZHOH040101    0.855  CORJ870102    0.855
+  SWER830101    0.853  BIOV880101    0.847  ROBB790101    0.846
+  ZHOH040103    0.845  CORJ870107    0.843  MIYS850101    0.843
+  PLIV810101    0.843  CORJ870104    0.840  BASU050101    0.839
+  CIDH920104    0.833  CORJ870106    0.832  ROSG850101    0.831
+  CORJ870105    0.828  BASU050103    0.828  LEVM760106    0.826
+  CORJ870103    0.825  BIOV880102    0.819  ZHOH040102    0.811
+  PONP800101    0.805  VINM940103   -0.814  OOBM770103   -0.818
+  KARP850102   -0.828  RACS770101   -0.837  MIYS990103   -0.838
+  GUYH850102   -0.843  CORJ870108   -0.845  MIYS990102   -0.846
+  MIYS990101   -0.847  MIYS990105   -0.849  VINM940101   -0.854
+  FUKS010103   -0.854  GUYH850103   -0.854  MIYS990104   -0.860
+  MEIH800101   -0.863  KARP850101   -0.864  PARJ860101   -0.871
+  PARS000101   -0.877  VINM940102   -0.885
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+   -0.45   -0.24   -0.20   -1.52    0.79   -0.99   -0.80   -1.00    1.07    0.76
+    1.29   -0.36    1.37    1.48   -0.12   -0.98   -0.70    1.38    1.49    1.26
+//
+H CIDH920102
+D Normalized hydrophobicity scales for beta-proteins (Cid et al., 1992)
+R LIT:1817105b PMID:1518784
+A Cid, H., Bunster, M., Canales, M. and Gazitua, F.
+T Hydrophobicity and structural classes in proteins
+J Protein Engineering 5, 373-375 (1992)
+C CIDH920105    0.969  ZHOH040101    0.939  CIDH920101    0.921
+  BASU050102    0.914  CIDH920103    0.911  ZHOH040103    0.909
+  CIDH920104    0.904  NISK860101    0.897  ROBB790101    0.896
+  NOZY710101    0.889  MEEJ810101    0.887  PLIV810101    0.877
+  LEVM760106    0.873  MIYS850101    0.873  CORJ870102    0.872
+  WERD780101    0.871  SWER830101    0.870  ROSG850101    0.866
+  BIOV880101    0.864  ZHOH040102    0.862  RADA880102    0.862
+  ARGP820101    0.862  JOND750101    0.861  ROSM880104    0.859
+  TAKK010101    0.859  BASU050101    0.858  MEEJ800102    0.856
+  FAUJ830101    0.856  BASU050103    0.856  MEEJ810102    0.843
+  BIOV880102    0.837  WIMW960101    0.837  RADA880108    0.833
+  SIMZ760101    0.832  GUOD860101    0.831  GOLD730101    0.829
+  PONP930101    0.820  EISD860101    0.819  ZASB820101    0.809
+  LIFS790101    0.808  BLAS910101    0.805  CASG920101    0.802
+  RACS770101   -0.825  VINM940103   -0.826  FUKS010103   -0.826
+  GRAR740102   -0.842  MIYS990103   -0.845  BULH740101   -0.851
+  GUYH850102   -0.855  MIYS990105   -0.859  MEIH800101   -0.867
+  WOLS870101   -0.869  MIYS990102   -0.870  PARS000101   -0.871
+  VINM940101   -0.872  MIYS990101   -0.872  KARP850101   -0.873
+  MIYS990104   -0.877  OOBM770103   -0.877  GUYH850103   -0.904
+  VINM940102   -0.925  PARJ860101   -0.930
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+   -0.08   -0.09   -0.70   -0.71    0.76   -0.40   -1.31   -0.84    0.43    1.39
+    1.24   -0.09    1.27    1.53   -0.01   -0.93   -0.59    2.25    1.53    1.09
+//
+H CIDH920103
+D Normalized hydrophobicity scales for alpha+beta-proteins (Cid et al., 1992)
+R LIT:1817105b PMID:1518784
+A Cid, H., Bunster, M., Canales, M. and Gazitua, F.
+T Hydrophobicity and structural classes in proteins
+J Protein Engineering 5, 373-375 (1992)
+C CIDH920105    0.973  CIDH920104    0.955  CIDH920102    0.911
+  NISK860101    0.909  MIYS850101    0.906  MANP780101    0.905
+  PLIV810101    0.899  PONP930101    0.899  BASU050103    0.894
+  BASU050101    0.894  RADA880108    0.891  BIOV880101    0.887
+  BASU050102    0.887  ROBB790101    0.884  WERD780101    0.881
+  ZHOH040103    0.881  PONP800101    0.876  CIDH920101    0.872
+  FAUJ830101    0.868  CORJ870107    0.866  ROSM880104    0.866
+  SWER830101    0.865  CORJ870102    0.864  BIOV880102    0.860
+  CORJ870104    0.857  CORJ870103    0.856  NISK800101    0.855
+  PONP800102    0.849  ROSG850102    0.846  GUOD860101    0.845
+  PONP800108    0.841  BLAS910101    0.838  MEEJ810101    0.837
+  CORJ870106    0.837  PONP800107    0.833  ROSM880105    0.832
+  CORJ870105    0.832  ZHOH040101    0.829  CASG920101    0.827
+  ARGP820101    0.827  JOND750101    0.826  PONP800103    0.823
+  CORJ870101    0.822  EISD860101    0.821  RADA880102    0.819
+  LIFS790101    0.815  PTIO830102    0.807  MEIH800103    0.802
+  FUKS010103   -0.804  PUNT030102   -0.810  KRIW790101   -0.819
+  PUNT030101   -0.819  PARS000101   -0.821  MEIH800102   -0.825
+  RACS770102   -0.834  VINM940101   -0.837  FASG890101   -0.846
+  BULH740101   -0.848  KARP850102   -0.852  VINM940102   -0.855
+  OOBM770103   -0.863  CORJ870108   -0.864  MIYS990103   -0.870
+  GRAR740102   -0.871  GUYH850102   -0.871  MIYS990105   -0.876
+  WOLS870101   -0.879  RACS770101   -0.881  MIYS990104   -0.883
+  GUYH850103   -0.890  MIYS990102   -0.899  MIYS990101   -0.900
+  MEIH800101   -0.905  PARJ860101   -0.916
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    0.36   -0.52   -0.90   -1.09    0.70   -1.05   -0.83   -0.82    0.16    2.17
+    1.18   -0.56    1.21    1.01   -0.06   -0.60   -1.20    1.31    1.05    1.21
+//
+H CIDH920104
+D Normalized hydrophobicity scales for alpha/beta-proteins (Cid et al., 1992)
+R LIT:1817105b PMID:1518784
+A Cid, H., Bunster, M., Canales, M. and Gazitua, F.
+T Hydrophobicity and structural classes in proteins
+J Protein Engineering 5, 373-375 (1992)
+C CIDH920105    0.970  CIDH920103    0.955  NISK860101    0.944
+  ZHOH040103    0.941  BASU050103    0.941  BASU050102    0.934
+  BIOV880101    0.933  PONP930101    0.930  FAUJ830101    0.922
+  MANP780101    0.918  BASU050101    0.917  MIYS850101    0.915
+  RADA880108    0.914  PONP800108    0.909  CIDH920102    0.904
+  ROBB790101    0.903  CASG920101    0.903  NISK800101    0.900
+  ROSG850102    0.896  CORJ870101    0.896  WERD780101    0.896
+  PLIV810101    0.893  BIOV880102    0.890  PONP800101    0.888
+  NADH010104    0.888  NADH010103    0.885  BLAS910101    0.881
+  PONP800102    0.880  MEEJ810101    0.878  NADH010105    0.869
+  NADH010101    0.865  PONP800103    0.863  SWER830101    0.862
+  ROSM880104    0.860  CORJ870102    0.860  GUOD860101    0.860
+  ZHOH040101    0.858  NADH010102    0.856  ROSM880105    0.855
+  MEIH800103    0.853  PTIO830102    0.842  CORJ870103    0.841
+  MEEJ810102    0.837  CORJ870107    0.835  EISD860103    0.834
+  CIDH920101    0.833  PONP800107    0.832  JURD980101    0.832
+  CORJ870104    0.832  LIFS790101    0.832  KYTJ820101    0.824
+  ARGP820101    0.819  JOND750101    0.818  RADA880102    0.817
+  EISD860101    0.812  BAEK050101    0.809  JANJ780102    0.803
+  COWR900101    0.803  DESM900102    0.802  KARP850101   -0.801
+  GUYH850101   -0.821  KUHL950101   -0.822  WOEC730101   -0.823
+  PUNT030101   -0.827  ROSM880101   -0.828  BULH740101   -0.829
+  CORJ870108   -0.829  ROSM880102   -0.831  KARP850102   -0.833
+  VINM940103   -0.835  KIDA850101   -0.836  RACS770102   -0.854
+  PUNT030102   -0.857  RACS770101   -0.864  KRIW790101   -0.867
+  MEIH800102   -0.868  VINM940101   -0.883  VINM940102   -0.884
+  WOLS870101   -0.891  GUYH850102   -0.894  MIYS990103   -0.902
+  FASG890101   -0.903  GUYH850103   -0.906  OOBM770103   -0.912
+  PARJ860101   -0.913  GRAR740102   -0.915  MIYS990101   -0.915
+  MIYS990102   -0.916  MIYS990104   -0.916  MIYS990105   -0.916
+  MEIH800101   -0.917
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    0.17   -0.70   -0.90   -1.05    1.24   -1.20   -1.19   -0.57   -0.25    2.06
+    0.96   -0.62    0.60    1.29   -0.21   -0.83   -0.62    1.51    0.66    1.21
+//
+H CIDH920105
+D Normalized average hydrophobicity scales (Cid et al., 1992)
+R LIT:1817105b PMID:1518784
+A Cid, H., Bunster, M., Canales, M. and Gazitua, F.
+T Hydrophobicity and structural classes in proteins
+J Protein Engineering 5, 373-375 (1992)
+C CIDH920103    0.973  CIDH920104    0.970  CIDH920102    0.969
+  NISK860101    0.938  BASU050102    0.931  ZHOH040103    0.926
+  ROBB790101    0.921  CIDH920101    0.921  MIYS850101    0.916
+  BASU050103    0.914  PLIV810101    0.914  BIOV880101    0.912
+  BASU050101    0.907  WERD780101    0.905  ZHOH040101    0.904
+  RADA880108    0.898  FAUJ830101    0.893  MEEJ810101    0.892
+  PONP930101    0.891  SWER830101    0.890  CORJ870102    0.890
+  ROSM880104    0.886  BIOV880102    0.882  MANP780101    0.879
+  ARGP820101    0.867  JOND750101    0.866  RADA880102    0.861
+  CASG920101    0.859  GUOD860101    0.858  ROSG850102    0.858
+  NOZY710101    0.857  PONP800101    0.856  NISK800101    0.854
+  BLAS910101    0.852  CORJ870107    0.848  MEEJ810102    0.844
+  PONP800108    0.843  ROSM880105    0.843  MEEJ800102    0.840
+  TAKK010101    0.840  EISD860101    0.839  CORJ870104    0.838
+  CORJ870103    0.838  SIMZ760101    0.837  PONP800102    0.831
+  LIFS790101    0.828  LEVM760106    0.828  CORJ870101    0.827
+  CORJ870106    0.826  CORJ870105    0.822  GOLD730101    0.820
+  ZHOH040102    0.818  PONP800107    0.818  NADH010104    0.817
+  PTIO830102    0.813  VENT840101    0.813  NADH010103    0.810
+  PONP800103    0.807  MEIH800103    0.804  NADH010105    0.800
+  WOEC730101   -0.800  KIDA850101   -0.803  PUNT030101   -0.805
+  KRIW790101   -0.816  FUKS010103   -0.821  PUNT030102   -0.822
+  MEIH800102   -0.826  RACS770102   -0.830  VINM940103   -0.832
+  KARP850102   -0.839  CORJ870108   -0.843  FASG890101   -0.860
+  PARS000101   -0.860  KARP850101   -0.866  BULH740101   -0.871
+  GRAR740102   -0.884  VINM940101   -0.885  MIYS990103   -0.886
+  RACS770101   -0.887  GUYH850102   -0.892  WOLS870101   -0.899
+  MIYS990105   -0.901  OOBM770103   -0.904  MIYS990104   -0.908
+  VINM940102   -0.910  MIYS990102   -0.915  MIYS990101   -0.916
+  MEIH800101   -0.923  GUYH850103   -0.927  PARJ860101   -0.948
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    0.02   -0.42   -0.77   -1.04    0.77   -1.10   -1.14   -0.80    0.26    1.81
+    1.14   -0.41    1.00    1.35   -0.09   -0.97   -0.77    1.71    1.11    1.13
+//
+H BHAR880101
+D Average flexibility indices (Bhaskaran-Ponnuswamy, 1988)
+R LIT:1414112
+A Bhaskaran, R. and Ponnuswamy, P.K.
+T Positional flexibilities of amino acid residues in globular proteins
+J Int. J. Peptide Protein Res. 32, 241-255 (1988)
+C VINM940103    0.869  KARP850102    0.806  WERD780101   -0.803
+  RICJ880111   -0.813
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+   0.357   0.529   0.463   0.511   0.346   0.493   0.497   0.544   0.323   0.462
+   0.365   0.466   0.295   0.314   0.509   0.507   0.444   0.305   0.420   0.386
+//
+H CHAM820101
+D Polarizability parameter (Charton-Charton, 1982)
+R LIT:0902079b PMID:7183857
+A Charton, M. and Charton, B.I.
+T The structural dependence of amino acid hydrophobicity parameters
+J J. Theor. Biol. 99, 629-644 (1982) (Pro 0.018)
+C FAUJ880103    0.992  CHOC750101    0.982  TSAJ990102    0.978
+  TSAJ990101    0.977  GOLD730102    0.967  CHOC760101    0.966
+  BIGC670101    0.966  KRIW790103    0.963  FASG760101    0.962
+  GRAR740103    0.951  PONJ960101    0.938  HARY940101    0.933
+  ROSG850101    0.917  LEVM760102    0.915  LEVM760105    0.915
+  FAUJ880106    0.902  CHAM830106    0.899  LEVM760107    0.891
+  MCMT640101    0.871  DAWD720101    0.865  RADA880106    0.847
+  ZHOH040102    0.826  LEVM760106    0.818  HUTJ700102    0.815
+  CHAM830105    0.809  SNEP660103    0.808  RADA880103   -0.912
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+   0.046   0.291   0.134   0.105   0.128   0.180   0.151   0.000   0.230   0.186
+   0.186   0.219   0.221   0.290   0.131   0.062   0.108   0.409   0.298   0.140
+//
+H CHAM820102
+D Free energy of solution in water, kcal/mole (Charton-Charton, 1982)
+R LIT:0902079b PMID:7183857
+A Charton, M. and Charton, B.I.
+T The structural dependence of amino acid hydrophobicity parameters
+J J. Theor. Biol. 99, 629-644 (1982) (Asn His Lys Thr !)
+C 
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+  -0.368   -1.03      0.    2.06    4.53   0.731    1.77  -0.525      0.   0.791
+    1.07      0.   0.656    1.06   -2.24  -0.524      0.    1.60    4.91   0.401
+//
+H CHOC760101
+D Residue accessible surface area in tripeptide (Chothia, 1976)
+R LIT:2004094b PMID:994183
+A Chothia, C.
+T The nature of the accessible and buried surfaces in proteins
+J J. Mol. Biol. 105, 1-14 (1976)
+C FAUJ880103    0.985  CHOC750101    0.981  FASG760101    0.978
+  LEVM760102    0.972  TSAJ990102    0.972  LEVM760105    0.968
+  TSAJ990101    0.968  CHAM820101    0.966  PONJ960101    0.961
+  GOLD730102    0.960  BIGC670101    0.960  KRIW790103    0.948
+  HARY940101    0.946  GRAR740103    0.945  CHAM830106    0.937
+  DAWD720101    0.901  FAUJ880106    0.898  RADA880106    0.875
+  WOLS870102    0.845  ROSG850101    0.842  FAUJ880104    0.835
+  CHAM830105    0.833  OOBM770102    0.824  HUTJ700102    0.819
+  MCMT640101    0.809  LEVM760107    0.807  RADA880103   -0.924
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    115.    225.    160.    150.    135.    180.    190.     75.    195.    175.
+    170.    200.    185.    210.    145.    115.    140.    255.    230.    155.
+//
+H CHOC760102
+D Residue accessible surface area in folded protein (Chothia, 1976)
+R LIT:2004094b PMID:994183
+A Chothia, C.
+T The nature of the accessible and buried surfaces in proteins
+J J. Mol. Biol. 105, 1-14 (1976)
+C JANJ780101    0.973  GUYH850104    0.970  JANJ780103    0.959
+  GUYH850105    0.946  OOBM770101    0.925  FAUJ880109    0.872
+  ROSM880102    0.845  MEIH800102    0.839  PRAM900101    0.826
+  ENGD860101    0.826  PUNT030101    0.809  RACS770102    0.809
+  GUYH850101    0.807  KIDA850101    0.804  MEIH800103   -0.802
+  EISD860103   -0.802  JACR890101   -0.803  NADH010104   -0.809
+  JANJ790101   -0.809  RADA880101   -0.814  ROSG850102   -0.819
+  DESM900102   -0.823  RADA880104   -0.830  WOLR790101   -0.834
+  KYTJ820101   -0.838  WOLR810101   -0.840  NADH010103   -0.840
+  CHOC760104   -0.845  WARP780101   -0.849  JURD980101   -0.851
+  OLSK800101   -0.886  EISD840101   -0.892  NADH010102   -0.893
+  CHOC760103   -0.912  RADA880107   -0.925  JANJ780102   -0.935
+  JANJ790102   -0.969
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+     25.     90.     63.     50.     19.     71.     49.     23.     43.     18.
+     23.     97.     31.     24.     50.     44.     47.     32.     60.     18.
+//
+H BIGC670101
+D Residue volume (Bigelow, 1967)
+R LIT:2004108b PMID:6048539
+A Bigelow, C.C.
+T On the average hydrophobicity of proteins and the relation between it and 
+  protein structure
+J J. Theor. Biol. 16, 187-211 (1967) (Asn Gln 5.0)
+C GOLD730102    1.000  KRIW790103    0.993  TSAJ990101    0.993
+  TSAJ990102    0.992  CHOC750101    0.990  GRAR740103    0.984
+  FAUJ880103    0.972  CHAM820101    0.966  HARY940101    0.960
+  CHOC760101    0.960  PONJ960101    0.950  FASG760101    0.919
+  LEVM760105    0.913  ROSG850101    0.910  DAWD720101    0.903
+  LEVM760102    0.896  ZHOH040102    0.884  LEVM760106    0.876
+  CHAM830106    0.870  LEVM760107    0.863  FAUJ880106    0.860
+  RADA880106    0.856  MCMT640101    0.814  RADA880103   -0.865
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    52.6   109.1    75.7    68.4    68.3    89.7    84.7    36.3    91.9   102.0
+   102.0   105.1    97.7   113.9    73.6    54.9    71.2   135.4   116.2    85.1
+//
+H CHAM810101
+D Steric parameter (Charton, 1981)
+R LIT:2004112b PMID:7300379
+A Charton, M.
+T Protein folding and the genetic code: An alternative quantitative model
+J J. Theor. Biol. 91, 115-123 (1981) (Pro !)
+C FAUJ880102    0.881  LEVM760104   -0.818  KIMC930101   -0.848
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    0.52    0.68    0.76    0.76    0.62    0.68    0.68    0.00    0.70    1.02
+    0.98    0.68    0.78    0.70    0.36    0.53    0.50    0.70    0.70    0.76
+//
+H DAYM780101
+D Amino acid composition (Dayhoff et al., 1978a)
+R 
+A Dayhoff, M.O., Hunt, L.T. and Hurst-Calderone, S.
+T Composition of proteins
+J In "Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (Dayhoff, M.O., 
+  ed.), National Biomedical Research Foundation, Washington, D.C., p.363 (1978)
+C JUNJ780101    0.986  JUKT750101    0.975  CEDJ970101    0.970
+  JOND920101    0.954  CEDJ970104    0.952  CEDJ970102    0.945
+  NAKH900101    0.940  KUMS000102    0.925  FUKS010110    0.897
+  NAKH900102    0.883  FUKS010111    0.882  NAKH920101    0.882
+  KUMS000101    0.866  NAKH920107    0.861  FUKS010112    0.856
+  NAKH920106    0.856  NAKH920103    0.851  CEDJ970105    0.839
+  NAKH920104    0.819  CEDJ970103    0.807  NAKH920102    0.802
+  FUKS010109    0.801
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+     8.6     4.9     4.3     5.5     2.9     3.9     6.0     8.4     2.0     4.5
+     7.4     6.6     1.7     3.6     5.2     7.0     6.1     1.3     3.4     6.6
+//
+H DAYM780201
+D Relative mutability (Dayhoff et al., 1978b)
+R 
+A Dayhoff, M.O., Schwartz, R.M. and Orcutt, B.C.
+T A model of evolutionary change in proteins
+J In "Atlas of Protein Sequence and Structure", Vol.5, Suppl.3 (Dayhoff, M.O., 
+  ed.), National Biomedical Research Foundation, Washington, D.C. pp. 345-352 
+  (1978)
+C JOND920102    0.889
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    100.     65.    134.    106.     20.     93.    102.     49.     66.     96.
+     40.     56.     94.     41.     56.    120.     97.     18.     41.     74.
+//
+H FAUJ880102
+D Smoothed upsilon steric parameter (Fauchere et al., 1988)
+R LIT:1414114 PMID:3209351
+A Fauchere, J.L., Charton, M., Kier, L.B., Verloop, A. and Pliska, V.
+T Amino acid side chain parameters for correlation studies in biology and 
+  pharmacology
+J Int. J. Peptide Protein Res. 32, 269-278 (1988) (Pro missing) Original 
+  reference of these two data: Fauchere, L.J. In "QSAR in Design of Bioactive 
+  Compounds", (Kuchar, M., ed.), Prous, Barcelona pp.135-144 (1984)
+C AVBF000102    0.881  CHAM810101    0.881  PTIO830101    0.832
+  CHOP780216   -0.807  CHAM830101   -0.809  GEIM800108   -0.819
+  MUNV940104   -0.824  PRAM900104   -0.844  LEVM780103   -0.846
+  QIAN880132   -0.849  QIAN880133   -0.851  QIAN880134   -0.852
+  LEVM780106   -0.865  GEIM800111   -0.873  KIMC930101   -0.886
+I    A/L     R/K     N/M     D/F     C/P     Q/S     E/T     G/W     H/Y     I/V
+    0.53    0.69    0.58    0.59    0.66    0.71    0.72    0.00    0.64    0.96
+    0.92    0.78    0.77    0.71      0.    0.55    0.63    0.84    0.71    0.89
+//

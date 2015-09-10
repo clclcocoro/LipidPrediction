@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import re
+import math
 
 # AAindexs
 # 
@@ -67,21 +68,54 @@ AAindexs = [
       'L':   0.920,'K':   0.780,'M':   0.770,'F':   0.710,'P':   0.000,'S':   0.550,'T':   0.630,'W':   0.840,'Y':   0.710,'V':   0.890},
     ]
 
+# Replace above AAindexs to Normalize AAindexs
+def normalize_AAindex():
+    for i, AAindex in enumerate(AAindexs):
+        keys = AAindex.keys()
+        values = AAindex.values()
+        max_val = max(values)
+        min_val = min(values)
+        normalized_values = map(lambda x: (x-min_val)/(max_val-min_val), values)
+        for k, v in zip(keys, normalized_values):
+            AAindex[k] = v
+        AAindexs[i] = AAindex
+
+
+def AAindex_feature(aa):
+    feature = []
+    for AAindex in AAindexs:
+        feature.append(AAindex[aa])
+    return feature
+ 
+
+def secondary_structure_encode(struc):
+    if struc == '-':
+        return [1, 0, 0]
+    elif struc == 'H':
+        return [0, 1, 0]
+    elif struc == 'E':
+        return [0, 0, 1]
+    else:
+        raise ValueError("secondary_structure is invalid {}", struc)
+
 
 class Protein(object):
 
     """
     pssm = [[-1, -3, 0, ... 1], [-4, -5, 2, ..., -6], ..., [2, -1, 0, ..., -4]]
-    secondary_structure = '-----HHHHH----BBB ... CC----'
+    secondary_structure = '-----HHHHH----EEE ... HH----'
     binding_record = '00000100000001100000000...000110'
     sequence = 'AAARAVAAAASRARRLPPPLPL...PRPALKKD'
-    pdbid = '3K5H:A'
+    proteinid = '3K5H:A'
     """
 
-    def __init__(self, pssm_file, secondary_structure_file, binding_residue_file):
+    def __init__(self, pssm_file, secondary_structure_file, binding_residue_file, smoothing_window_size=3):
         self.pssm = self.parse_pssm_file(pssm_file)
-        self.secondary_structure = self.parse_secondary_structure_file(selsecondary_structure_file)
-        self.binding_record, self.sequence, self.pdbid = self.parse_binding_residue_file(binding_residue_file)
+        self.secondary_structure = self.parse_secondary_structure_file(secondary_structure_file)
+        self.binding_record, self.sequence, self.proteinid = self.parse_binding_residue_file(binding_residue_file)
+        self.sequence_length = len(self.sequence)
+        self.smoothed_pssm = self.smoothe(smoothing_window_size)
+        self.exp_pssm = [map(lambda x: 1/(1+math.exp(-x)), row) for row in self.pssm]
 
     def parse_pssm_file(self, pssm_file):
         pssm = []
@@ -93,28 +127,51 @@ class Protein(object):
                     return pssm
                 li = []
                 for i in xrange(9, 67, 3):
-                    li.append(int(line[idx:idx+3].strip()))
+                    li.append(int(line[i:i+3].strip()))
                 pssm.append(li)
 
     def parse_secondary_structure_file(self, secondary_structure_file):
         with open(secondary_structure_file) as fp:
-            for line in fp:
-                if line[0] in {'-', 'H', 'B', 'C'}:
+            for c, line in enumerate(fp):
+                if c == 2 and line[0] in {'-', 'H', 'E'}:
                     return line.rstrip()
 
     def parse_binding_residue_file(self, binding_residue_file):
-        pdbid = ''
+        proteinid = ''
         sequence = ''
         binding_record = ''
         with open(binding_residue_file) as fp:
             for line in fp:
                 if line[0] == '>':
-                    pdbid = line[1:].rstrip()
+                    proteinid = line[1:].rstrip()
                 elif re.match(r'[A-Z]', line[0]): 
                     sequence = line.rstrip()
                 elif line[0] in {'0', '1'}:
                     binding_record = line.rstrip()
-        return binding_record, sequence, pdbid
+        return binding_record, sequence, proteinid
+
+    def init_smoothed_pssm(self, smoothing_window_size):
+        self.smoothed_pssm = self.smoothe(smoothing_window_size)
+
+    def smoothe(self, smoothing_window_size):
+        smoothed_pssm = []
+        for i in xrange(self.sequence_length):
+            smoothed_row = [0] * 20
+            p = i - smoothing_window_size 
+            if p < 0:
+                p = 0
+            if i + smoothing_window_size <= self.sequence_length - 1:
+                while p <= i + smoothing_window_size:
+                    for j in xrange(20):
+                        smoothed_row[j] += self.pssm[p][j]
+                    p += 1
+            else:
+                while p <= self.sequence_length - 1:
+                    for j in xrange(20):
+                        smoothed_row[j] += self.pssm[p][j]
+                    p += 1
+            smoothed_pssm.append(smoothed_row)
+        return smoothed_pssm
 
     def is_binding_residue(self, position):
         if self.binding_record[position] == '1':
@@ -124,234 +181,169 @@ class Protein(object):
         else:
             raise ValueError("binding_record is invalid {}", self.binding_record[position])
 
-    def all_pssm_feature_vectors(self, window_size):
+    def create_feature_vectors_from_pssm(self, pssm, window_size, exp_pssm=False, dataset_type='all'):
+        if not dataset_type in {'all', 'bind', 'non_bind'}:
+            raise ValueError("dataset_type is invalid {}".format(dataset_type))
         feature_vectors = []
-        seqlen = len(self.pssm)
-        for i in xrange(seqlen):
+        for i in xrange(self.sequence_length):
+            if dataset_type == 'bind' and not self.is_binding_residue(i): 
+                continue # Skip non-binding residue
+            elif dataset_type == 'non_bind' and self.is_binding_residue(i):
+                continue # Skip binding residue
             feature_vector = []
             p = i - window_size 
             if p < 0:
-                feature_vector += [0] * (20 * (window_size-i))
+                if exp_pssm:
+                    feature_vector += [0.5] * (20 * (window_size-i))
+                else:
+                    feature_vector += [0] * (20 * (window_size-i))
                 p = 0
-            if i + window_size <= seqlen - 1:
+            if i + window_size <= self.sequence_length - 1:
                 while p <= i + window_size:
-                    feature_vector += self.pssm[p]
+                    feature_vector += pssm[p]
                     p += 1
             else:
-                while p <= seqlen - 1:
-                    feature_vector += self.pssm[p]
+                while p <= self.sequence_length - 1:
+                    feature_vector += pssm[p]
                     p += 1
-                feature_vector += [0] * (20*((i+window_size)-(seqlen-1)))
+                if exp_pssm:
+                    feature_vector += [0.5] * (20*((i+window_size)-(self.sequence_length-1)))
+                else:
+                    feature_vector += [0] * (20*((i+window_size)-(self.sequence_length-1)))
             feature_vectors.append(feature_vector)
         return feature_vectors
+        
+    def all_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.pssm, window_size, dataset_type='all')
 
     def bind_pssm_feature_vectors(self, window_size):
-        feature_vectors = []
-        seqlen = len(self.pssm)
-        for i in xrange(seqlen):
-            if not is_binding_residue(i):
-                continue
-            feature_vector = []
-            p = i - window_size 
-            if p < 0:
-                feature_vector += [0] * (20 * (window_size-i))
-                p = 0
-            if i + window_size <= seqlen - 1:
-                while p <= i + window_size:
-                    feature_vector += self.pssm[p]
-                    p += 1
-            else:
-                while p <= seqlen - 1:
-                    feature_vector += self.pssm[p]
-                    p += 1
-                feature_vector += [0] * (20*((i+window_size)-(seqlen-1)))
-            feature_vectors.append(feature_vector)
-        return feature_vectors
+        return self.create_feature_vectors_from_pssm(self.pssm, window_size, dataset_type='bind')
 
     def non_bind_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.pssm, window_size, dataset_type='non_bind')
+ 
+    def all_smoothed_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.smoothed_pssm, window_size, dataset_type='all')
+
+    def bind_smoothed_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.smoothed_pssm, window_size, dataset_type='bind')
+
+    def non_bind_smoothed_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.smoothed_pssm, window_size, dataset_type='non_bind')
+
+    def all_exp_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.exp_pssm, window_size, exp_pssm=True, dataset_type='all')
+
+    def bind_exp_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.exp_pssm, window_size, exp_pssm=True, dataset_type='bind')
+
+    def non_bind_exp_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.exp_pssm, window_size, exp_pssm=True, dataset_type='non_bind')
+
+    def create_feature_vectors_from_AAindex(self, window_size, dataset_type='all'):
+        if not dataset_type in {'all', 'bind', 'non_bind'}:
+            raise ValueError("dataset_type is invalid {}".format(dataset_type))
         feature_vectors = []
-        seqlen = len(self.pssm)
-        for i in xrange(seqlen):
-            if is_binding_residue(i):
-                continue
+        for i in xrange(self.sequence_length):
+            if dataset_type == 'bind' and not self.is_binding_residue(i): 
+                continue # Skip non-binding residue
+            elif dataset_type == 'non_bind' and self.is_binding_residue(i):
+                continue # Skip binding residue
             feature_vector = []
             p = i - window_size 
             if p < 0:
-                feature_vector += [0] * (20 * (window_size-i))
+                feature_vector += [0] * (len(AAindexs) * (window_size-i))
                 p = 0
-            if i + window_size <= seqlen - 1:
+            if i + window_size <= self.sequence_length - 1:
                 while p <= i + window_size:
-                    feature_vector += self.pssm[p]
+                    feature_vector += AAindex_feature(self.sequence[p])
                     p += 1
             else:
-                while p <= seqlen - 1:
-                    feature_vector += self.pssm[p]
+                while p <= self.sequence_length - 1:
+                    feature_vector += AAindex_feature(self.sequence[p])
                     p += 1
-                feature_vector += [0] * (20*((i+window_size)-(seqlen-1)))
+                feature_vector += [0] * (len(AAindexs)*((i+window_size)-(self.sequence_length-1)))
             feature_vectors.append(feature_vector)
         return feature_vectors
 
-    def all_AAindex_feature_vectors(self):
+    def all_AAindex_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='all')
+
+    def bind_AAindex_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='bind')
+
+    def non_bind_AAindex_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='non_bind')
+
+
+    def create_feature_vectors_from_secondary_structure(self, window_size, dataset_type='all'):
+        # '-': [1, 0, 0], 'H': [0, 1, 0], 'E': [0, 0, 1]
+        if not dataset_type in {'all', 'bind', 'non_bind'}:
+            raise ValueError("dataset_type is invalid {}".format(dataset_type))
         feature_vectors = []
-        for aa in self.sequence:
+        for i in xrange(self.sequence_length):
+            if dataset_type == 'bind' and not self.is_binding_residue(i): 
+                continue # Skip non-binding residue
+            elif dataset_type == 'non_bind' and self.is_binding_residue(i):
+                continue # Skip binding residue
             feature_vector = []
-            for AAindex in AAindexs:
-                feature_vector.append(AAindex[aa])
+            p = i - window_size 
+            if p < 0:
+                feature_vector += [0] * (3 * (window_size-i))
+                p = 0
+            if i + window_size <= self.sequence_length - 1:
+                while p <= i + window_size:
+                    feature_vector += secondary_structure_encode(self.secondary_structure[p])
+                    p += 1
+            else:
+                while p <= self.sequence_length - 1:
+                    feature_vector += secondary_structure_encode(self.secondary_structure[p])
+                    p += 1
+                feature_vector += [0] * (3*((i+window_size)-(self.sequence_length-1)))
             feature_vectors.append(feature_vector)
         return feature_vectors
 
-    def bind_AAindex_feature_vectors(self):
-        feature_vectors = []
-        for i, aa in enumerate(self.sequence):
-            if not is_binding_residue(i):
-                continue
-            feature_vector = []
-            for AAindex in AAindexs:
-                feature_vector.append(AAindex[aa])
-            feature_vectors.append(feature_vector)
-        return feature_vectors
+    def all_secondary_structure_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_secondary_structure(window_size, dataset_type='all')
 
-    def non_bind_AAindex_feature_vectors(self):
-        feature_vectors = []
-        for i, aa in enumerate(self.sequence):
-            if is_binding_residue(i):
-                continue
-            feature_vector = []
-            for AAindex in AAindexs:
-                feature_vector.append(AAindex[aa])
-            feature_vectors.append(feature_vector)
-        return feature_vectors
+    def bind_secondary_structure_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_secondary_structure(window_size, dataset_type='bind')
 
-    def all_secondary_structure_feature_vectors(self):
-        # '-': [1, 0, 0, 0], 'H': [0, 1, 0, 0], 'B': [0, 0, 1, 0], 'C': [0, 0, 0, 1]
-        feature_vectors = []
-        for struc in self.secondary_structure:
-            if struc == '-':
-                feature_vectors.append([1, 0, 0, 0])
-            elif struc == 'H':
-                feature_vectors.append([0, 1, 0, 0])
-            elif struc == 'B':
-                feature_vectors.append([0, 0, 1, 0])
-            elif struc == 'C':
-                feature_vectors.append([0, 0, 0, 1])
-            else:
-                raise ValueError("secondary_structure is invalid {}", struc)
-        return feature_vecotrs
-
-    def bind_secondary_structure_feature_vectors(self):
-        # '-': [1, 0, 0, 0], 'H': [0, 1, 0, 0], 'B': [0, 0, 1, 0], 'C': [0, 0, 0, 1]
-        feature_vectors = []
-        for i, struc in enumerate(self.secondary_structure):
-            if not is_binding_residue(i):
-                continue
-            if struc == '-':
-                feature_vectors.append([1, 0, 0, 0])
-            elif struc == 'H':
-                feature_vectors.append([0, 1, 0, 0])
-            elif struc == 'B':
-                feature_vectors.append([0, 0, 1, 0])
-            elif struc == 'C':
-                feature_vectors.append([0, 0, 0, 1])
-            else:
-                raise ValueError("secondary_structure is invalid {}", struc)
-        return feature_vecotrs
-
-    def non_bind_secondary_structure_feature_vectors(self):
-        # '-': [1, 0, 0, 0], 'H': [0, 1, 0, 0], 'B': [0, 0, 1, 0], 'C': [0, 0, 0, 1]
-        feature_vectors = []
-        for i, struc in enumerate(self.secondary_structure):
-            if is_binding_residue(i):
-                continue
-            if struc == '-':
-                feature_vectors.append([1, 0, 0, 0])
-            elif struc == 'H':
-                feature_vectors.append([0, 1, 0, 0])
-            elif struc == 'B':
-                feature_vectors.append([0, 0, 1, 0])
-            elif struc == 'C':
-                feature_vectors.append([0, 0, 0, 1])
-            else:
-                raise ValueError("secondary_structure is invalid {}", struc)
-        return feature_vecotors
-
-
-def create_training_data(protein, window_size):
-    positive_data = []
-    negative_data = []
-    create_pssm_feature_vectors(protein, window_size)
-    for i, feature_vector in enumerate(feature_vectors):
-        if i in bindRecord:
-            positive_data.append(feature_vector)
-        else:
-            if i in negative_data_index_set:
-                negative_data.append(feature_vector)
-    return positive_data, negative_data
-
-
-def create_dataset(bindingResidueData, pssmData, window_size):
-    positive_dataset = []
-    negative_dataset = []
-    for uniprotURI in bindingResidueData.get_uniprotURIs():
-        pssm = pssmData.get_PSSMRecord(uniprotURI)
-        feature_vectors = create_feature_vectors(pssm, window_size)
-        bindRecord = bindingResidueData.get_bindRecord(uniprotURI)
-        negative_data_index_set = get_negative_data_index_set(bindRecord, len(pssm.get_PSSM()))
-        positive_data, negative_data = create_training_data(bindRecord, feature_vectors, negative_data_index_set)
-        positive_dataset += positive_data
-        negative_dataset += negative_data
-    return positive_dataset, negative_dataset
+    def non_bind_secondary_structure_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_secondary_structure(window_size, dataset_type='non_bind')
 
 
 if __name__ == "__main__":
-    bindres_file = "/Users/clclcocoro/galaxy/work/data/bindingData.txt"
-    pssms_file = "/Users/clclcocoro/galaxy/work/data/pssms.txt"
-    bindingResidueData, pssmData = parse_record_files(bindres_file, pssms_file)
-    
-    """
-    print "bindingResidueData"
-    print bindingResidueData
-    print bindingResidueData.get_uniprotURIs()
-    print bindingResidueData.get_bindRecord(bindingResidueData.get_uniprotURIs()[0])
-    print "pssmData"
-    print pssmData
-    print pssmData.get_uniprotURIs()
-    print pssmData.get_PSSMRecord(pssmData.get_uniprotURIs()[0]).get_PSSM()[:10]
-    """
-    
-    window_size = 3
-    positive_dataset, negative_dataset = create_dataset(bindingResidueData, pssmData, window_size)
-    
-    print "positive_dataset"
-    print positive_dataset
-    print "negative_dataset"
-    print negative_dataset
-# H CIDH920101
-# D Normalized hydrophobicity scales for alpha-proteins (Cid et al., 1992)
-# H CIDH920102
-# D Normalized hydrophobicity scales for beta-proteins (Cid et al., 1992)
-# H CIDH920103
-# D Normalized hydrophobicity scales for alpha+beta-proteins (Cid et al., 1992)
-# H CIDH920104
-# D Normalized hydrophobicity scales for alpha/beta-proteins (Cid et al., 1992)
-# H CIDH920105
-# D Normalized average hydrophobicity scales (Cid et al., 1992)
-# H BHAR880101
-# D Average flexibility indices (Bhaskaran-Ponnuswamy, 1988)
-# H CHAM820101
-# D Polarizability parameter (Charton-Charton, 1982)
-# H CHAM820102
-# D Free energy of solution in water, kcal/mole (Charton-Charton, 1982)
-# H CHOC760101
-# D Residue accessible surface area in tripeptide (Chothia, 1976)
-# H CHOC760102
-# D Residue accessible surface area in folded protein (Chothia, 1976)
-# H BIGC670101
-# D Residue volume (Bigelow, 1967)
-# H CHAM810101
-# D Steric parameter (Charton, 1981)
-# H DAYM780101
-# D Amino acid composition (Dayhoff et al., 1978a)
-# H DAYM780201
-# D Relative mutability (Dayhoff et al., 1978b)
-# H FAUJ880102
-# D Smoothed upsilon steric parameter (Fauchere et al., 1988)
+    pssm_file = "/Users/clclcocoro/work/lipid_bindResPred/work/pssm/positive/1A25:B.pssm"
+    bindres_file = "/Users/clclcocoro/work/lipid_bindResPred/work/bindres/positive/1A25:B.bindres"
+    struc_file = "/Users/clclcocoro/work/lipid_bindResPred/jpred/secondary_struc/1A25:B.secondary_structure.txt"
+    protein = Protein(pssm_file, struc_file, bindres_file)
+    for row in protein.pssm:
+        buff = ''
+        for ele in row:
+            buff += "{:3d}".format(ele)
+        print buff
+    print ""
+    for row in protein.smoothed_pssm:
+        buff = ''
+        for ele in row:
+            buff += "{:3d}".format(ele)
+        print buff
+    print len(protein.pssm)
+    print len(protein.smoothed_pssm)
+    print protein.secondary_structure
+    print protein.binding_record
+    print protein.proteinid
+    print protein.sequence
+    print len(protein.bind_pssm_feature_vectors(1))
+    print protein.bind_AAindex_feature_vectors(1)
+    print len(protein.bind_secondary_structure_feature_vectors(1))
+    print len(protein.non_bind_pssm_feature_vectors(1))
+    print len(protein.non_bind_AAindex_feature_vectors(1))
+    print len(protein.non_bind_secondary_structure_feature_vectors(1))
+    normalize_AAindex()
+    print protein.bind_AAindex_feature_vectors(1)
+    print len(protein.non_bind_AAindex_feature_vectors(1))
+    #print len(protein.all_pssm_feature_vectors(1))
+    #print len(protein.all_AAindex_feature_vectors(1))
+    #print len(protein.all_secondary_structure_feature_vectors(1))

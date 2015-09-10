@@ -7,16 +7,49 @@ correct_labels = [0, 0, 0, 1, 1, ... 1, 0]
 
 import math
 
+
 def calculate_TPR_FPR(TP, FP, TN, FN):
     FPR = FP / float(FP + TN)
     TPR = TP / float(TP + FN)
     return FPR, TPR
 
 
+def calculate_SE(TP, TN):
+    return TP / float(TP + FN)
+
+
+def calculate_SP(TN, FP):
+    return TN / float(TN + FP)
+
+
+def calculate_ACC(TP, FP, TN, FN):
+    return (TP + TN) / float(TP + FP + TN + FN)
+
+
 def calculate_MCC(TP, FP, TN, FN):
     if (TP+FN)*(TP+FP)*(TN+FP)*(TN+FN) == 0:
         return 0
     return (TP*TN-FP*FN) / math.sqrt((TP+FN)*(TP+FP)*(TN+FP)*(TN+FN))
+
+
+def calculate_performance(correct_labels, predicted_labels):
+    TP, FP, TN, FN = 0, 0, 0, 0
+    for c, p in zip(correct_labels, predicted_labels):
+        if c == 1 and p == 1:
+            TP += 1
+        elif c == 1 and p == 0:
+            FN += 1
+        elif c == 0 and p == 0:
+            TN += 1
+        elif c == 0 and p == 1:
+            FP += 1
+        else:
+            raise ValueError("label must be 0 or 1. c {} p {}".format(c, p))
+    SE = calculate_SE(TP, TN)
+    SP = calculate_SP(TN, FP)
+    ACC = calculate_TPR_FPR(TP, FP, TN, FN)
+    MCC = calculate_MCC(TP, FP, TN, FN)
+    return [SE, SP, ACC, MCC]
 
 
 def update_decision_value_and_max_mcc(decision_value_and_max_mcc, decision_value, TP, FP, TN, FN):

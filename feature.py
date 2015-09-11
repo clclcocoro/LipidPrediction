@@ -3,7 +3,7 @@
 import re
 import math
 
-# AAindexs
+# AAindexes
 # 
 # H CIDH920101
 # D Normalized hydrophobicity scales for alpha-proteins (Cid et al., 1992)
@@ -35,7 +35,7 @@ import math
 # D Relative mutability (Dayhoff et al., 1978b)
 # H FAUJ880102
 # D Smoothed upsilon steric parameter (Fauchere et al., 1988)
-AAindexs = [
+AAindexes = [
     { 'A':  -0.450,'R':  -0.240,'N':  -0.200,'D':  -1.520,'C':   0.790,'Q':  -0.990,'E':  -0.800,'G':  -1.000,'H':   1.070,'I':   0.760,
       'L':   1.290,'K':  -0.360,'M':   1.370,'F':   1.480,'P':  -0.120,'S':  -0.980,'T':  -0.700,'W':   1.380,'Y':   1.490,'V':   1.260},
     { 'A':  -0.080,'R':  -0.090,'N':  -0.700,'D':  -0.710,'C':   0.760,'Q':  -0.400,'E':  -1.310,'G':  -0.840,'H':   0.430,'I':   1.390,
@@ -68,9 +68,9 @@ AAindexs = [
       'L':   0.920,'K':   0.780,'M':   0.770,'F':   0.710,'P':   0.000,'S':   0.550,'T':   0.630,'W':   0.840,'Y':   0.710,'V':   0.890},
     ]
 
-# Replace above AAindexs to Normalize AAindexs
+# Replace above AAindexes to Normalize AAindexes
 def normalize_AAindex():
-    for i, AAindex in enumerate(AAindexs):
+    for i, AAindex in enumerate(AAindexes):
         keys = AAindex.keys()
         values = AAindex.values()
         max_val = max(values)
@@ -78,12 +78,12 @@ def normalize_AAindex():
         normalized_values = map(lambda x: (x-min_val)/(max_val-min_val), values)
         for k, v in zip(keys, normalized_values):
             AAindex[k] = v
-        AAindexs[i] = AAindex
+        AAindexes[i] = AAindex
 
 
 def AAindex_feature(aa):
     feature = []
-    for AAindex in AAindexs:
+    for AAindex in AAindexes:
         feature.append(AAindex[aa])
     return feature
  
@@ -114,8 +114,10 @@ class Protein(object):
         self.secondary_structure = self.parse_secondary_structure_file(secondary_structure_file)
         self.binding_record, self.sequence, self.proteinid = self.parse_binding_residue_file(binding_residue_file)
         self.sequence_length = len(self.sequence)
+        self.smoothing_window_size = smoothing_window_size
         self.smoothed_pssm = self.smoothe(smoothing_window_size)
         self.exp_pssm = [map(lambda x: 1/(1+math.exp(-x)), row) for row in self.pssm]
+        self.exp_smoothed_pssm = [map(lambda x: 1/(1+math.exp(-x)), row) for row in self.smoothed_pssm]
 
     def parse_pssm_file(self, pssm_file):
         pssm = []
@@ -151,6 +153,7 @@ class Protein(object):
         return binding_record, sequence, proteinid
 
     def init_smoothed_pssm(self, smoothing_window_size):
+        self.smoothing_window_size = smoothing_window_size
         self.smoothed_pssm = self.smoothe(smoothing_window_size)
 
     def smoothe(self, smoothing_window_size):
@@ -239,8 +242,17 @@ class Protein(object):
 
     def non_bind_exp_pssm_feature_vectors(self, window_size):
         return self.create_feature_vectors_from_pssm(self.exp_pssm, window_size, exp_pssm=True, dataset_type='non_bind')
+ 
+    def all_exp_smoothed_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.exp_smoothed_pssm, window_size, exp_pssm=True, dataset_type='all')
 
-    def create_feature_vectors_from_AAindex(self, window_size, dataset_type='all'):
+    def bind_exp_smoothed_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.exp_smoothed_pssm, window_size, exp_pssm=True, dataset_type='bind')
+
+    def non_bind_exp_smoothed_pssm_feature_vectors(self, window_size):
+        return self.create_feature_vectors_from_pssm(self.exp_smoothed_pssm, window_size, exp_pssm=True, dataset_type='non_bind')
+
+    def create_feature_vectors_from_AAindex(self, window_size, dataset_type='all', normalized=True):
         if not dataset_type in {'all', 'bind', 'non_bind'}:
             raise ValueError("dataset_type is invalid {}".format(dataset_type))
         feature_vectors = []
@@ -252,7 +264,10 @@ class Protein(object):
             feature_vector = []
             p = i - window_size 
             if p < 0:
-                feature_vector += [0] * (len(AAindexs) * (window_size-i))
+                if normalized:
+                    feature_vector += [0.5] * (len(AAindexes) * (window_size-i))
+                else:
+                    feature_vector += [0] * (len(AAindexes) * (window_size-i))
                 p = 0
             if i + window_size <= self.sequence_length - 1:
                 while p <= i + window_size:
@@ -262,19 +277,21 @@ class Protein(object):
                 while p <= self.sequence_length - 1:
                     feature_vector += AAindex_feature(self.sequence[p])
                     p += 1
-                feature_vector += [0] * (len(AAindexs)*((i+window_size)-(self.sequence_length-1)))
+                if normalized:
+                    feature_vector += [0.5] * (len(AAindexes)*((i+window_size)-(self.sequence_length-1)))
+                else:
+                    feature_vector += [0] * (len(AAindexes)*((i+window_size)-(self.sequence_length-1)))
             feature_vectors.append(feature_vector)
         return feature_vectors
 
-    def all_AAindex_feature_vectors(self, window_size):
-        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='all')
+    def all_AAindex_feature_vectors(self, window_size, normalized=True):
+        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='all', normalized=normalized)
 
-    def bind_AAindex_feature_vectors(self, window_size):
-        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='bind')
+    def bind_AAindex_feature_vectors(self, window_size, normalized=True):
+        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='bind', normalized=normalized)
 
-    def non_bind_AAindex_feature_vectors(self, window_size):
-        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='non_bind')
-
+    def non_bind_AAindex_feature_vectors(self, window_size, normalized=True):
+        return self.create_feature_vectors_from_AAindex(window_size, dataset_type='non_bind', normalized=normalized)
 
     def create_feature_vectors_from_secondary_structure(self, window_size, dataset_type='all'):
         # '-': [1, 0, 0], 'H': [0, 1, 0], 'E': [0, 0, 1]

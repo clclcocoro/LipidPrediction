@@ -26,8 +26,8 @@ class DataFilepath(object):
 
     def parse_data_path_file(self, data_path_file):
         filepaths = {}
-        positive_proteinids = []
-        negative_proteinids = []
+        positive_proteinids = set()
+        negative_proteinids = set()
         with open(data_path_file) as fp:
             for line in fp:
                 if re.match(r"^#", line):
@@ -41,9 +41,9 @@ class DataFilepath(object):
                     filepaths[proteinid] = {}
                 filepaths[proteinid][datatype] = path
                 if positive_or_negative == 'positive':
-                    positive_proteinids.append(proteinid)
+                    positive_proteinids.add(proteinid)
                 elif positive_or_negative == 'negative':
-                    negative_proteinids.append(proteinid)
+                    negative_proteinids.add(proteinid)
         return filepaths, positive_proteinids, negative_proteinids
 
     def get_positive_proteinids(self):

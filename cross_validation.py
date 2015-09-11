@@ -20,7 +20,7 @@ class CrossValidation(object):
     def write_log(self, cost, gamma, mean_AUC, mean_decision_value, mean_mcc, mean_performance_by_decision_value, mean_performance_by_predict_function):
         with open(self.log_file, 'a') as fp:
             #fp.write("{} {} {} {}\n".format(gene1, gene2, gene3, mean_AUC))
-            fp.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(feature_info, cost, gamma, mean_AUC, mean_decision_value, mean_mcc, '\t'.join(mean_performance_by_decision_value), '\t'.join(mean_performance_by_predict_function)))
+            fp.write("{}\t{}\t{}\t{}\t{}\t{}\t{}\t{}\n".format(self.feature_info, cost, gamma, mean_AUC, mean_decision_value, mean_mcc, '\t'.join(map(str, mean_performance_by_decision_value)), '\t'.join(map(str, mean_performance_by_predict_function))))
 
     def add_performances(self, mean, new):
         for i in xrange(len(mean)):
@@ -34,14 +34,14 @@ class CrossValidation(object):
         mean_performance_by_decision_value = [0, 0, 0, 0]   # [SE, SP, ACC, MCC]
         mean_performance_by_predict_function = [0, 0, 0, 0] # [SE, SP, ACC, MCC]
         for test_fold in xrange(self.fold):
-            test_labels, test_dataset, train_labels, train_dataset = folded_dataset.get_test_and_training_dataset(test_fold)
+            test_labels, test_dataset, train_labels, train_dataset = self.folded_dataset.get_test_and_training_dataset(test_fold)
             clf = svm.SVC(C=cost, gamma=gamma, class_weight='auto')
             clf.fit(train_dataset, train_labels)
             decision_values = clf.decision_function(test_dataset)
             if type(decision_values[0]) is list or type(decision_values[0]) is numpy.ndarray:
                 decision_values = map(lambda x: x[0], decision_values)
             AUC, decision_value_and_max_mcc = validate_performance.calculate_AUC(decision_values, test_labels)
-            predicted_labels_by_decision_value = [1 if decision_value >= my_decision_value else 0 for decision_value in decision_values]
+            predicted_labels_by_decision_value = [1 if decision_value >= decision_value_and_max_mcc[0] else 0 for decision_value in decision_values]
             predicted_labels_by_predict_function = clf.predict(test_dataset)
             # [SE, SP, ACC, MCC]
             performances = validate_performance.calculate_performance(test_labels, predicted_labels_by_decision_value)
@@ -56,5 +56,5 @@ class CrossValidation(object):
         mean_mcc /= self.fold
         mean_performance_by_decision_value = map(lambda x: x/float(self.fold), mean_performance_by_decision_value)
         mean_performance_by_predict_function = map(lambda x: x/float(self.fold), mean_performance_by_predict_function)
-        self.write_log(cost, gamma, window_size, mean_AUC, mean_decision_value, mean_mcc,
+        self.write_log(cost, gamma, mean_AUC, mean_decision_value, mean_mcc,
                         mean_performance_by_decision_value, mean_performance_by_predict_function)

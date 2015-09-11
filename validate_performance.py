@@ -14,7 +14,7 @@ def calculate_TPR_FPR(TP, FP, TN, FN):
     return FPR, TPR
 
 
-def calculate_SE(TP, TN):
+def calculate_SE(TP, FN):
     return TP / float(TP + FN)
 
 
@@ -47,7 +47,7 @@ def calculate_performance(correct_labels, predicted_labels):
             raise ValueError("label must be 0 or 1. c {} p {}".format(c, p))
     SE = calculate_SE(TP, TN)
     SP = calculate_SP(TN, FP)
-    ACC = calculate_TPR_FPR(TP, FP, TN, FN)
+    ACC = calculate_ACC(TP, FP, TN, FN)
     MCC = calculate_MCC(TP, FP, TN, FN)
     return [SE, SP, ACC, MCC]
 

@@ -6,10 +6,10 @@ import copy
 
 class ProteinHolder(object):
 
-    def __init__(self, positive_proteins=[], negative_proteins=[], test_proteins=[]):
-        self.positive_proteins = positive_proteins
-        self.negative_proteins = negative_proteins
-        self.test_proteins = test_proteins
+    def __init__(self):
+        self.positive_proteins = []
+        self.negative_proteins = []
+        self.test_proteins = []
 
     def add_positive_protein(self, positive_protein):
         self.positive_proteins.append(positive_protein)
@@ -41,36 +41,45 @@ def concatnate_feature_vector_list(a_vectors, b_vectors):
     return concatnated_vectors
 
 
-def create_positive_dataset(protein_holder, window_size, original_pssm=False, exp_pssm=True, smoothed_pssm=True, AAindex=True, secondary_structure=True):
-    feature_vectors = []
+def create_positive_dataset(protein_holder, window_size, original_pssm=False, exp_pssm=True, smoothed_pssm=True, exp_smoothed_pssm=True, AAindex=True, secondary_structure=True):
+    positive_dataset = []
     for protein in protein_holder.positive_proteins:
+        feature_vectors = []
         if original_pssm:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.bind_pssm_feature_vectors(window_size))
         if exp_pssm:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.bind_exp_pssm_feature_vectors(window_size))
         if smoothed_pssm:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.bind_smoothed_pssm_feature_vectors(window_size))
+        if exp_smoothed_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.bind_exp_smoothed_pssm_feature_vectors(window_size))
         if AAindex:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.bind_AAindex_feature_vectors(window_size))
         if secondary_structure:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.bind_secondary_structure_feature_vectors(window_size))
-    return feature_vectors
+        positive_dataset += feature_vectors
+
+    return positive_dataset
 
 
-def create_negative_dataset(protein_holder, window_size, original_pssm=False, exp_pssm=True, smoothed_pssm=True, AAindex=True, secondary_structure=True):
-    feature_vectors = []
+def create_negative_dataset(protein_holder, window_size, original_pssm=False, exp_pssm=True, smoothed_pssm=True, exp_smoothed_pssm=True, AAindex=True, secondary_structure=True):
+    negative_dataset = []
     for protein in protein_holder.negative_proteins:
+        feature_vectors = []
         if original_pssm:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_pssm_feature_vectors(window_size))
         if exp_pssm:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_exp_pssm_feature_vectors(window_size))
         if smoothed_pssm:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_smoothed_pssm_feature_vectors(window_size))
+        if exp_smoothed_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_exp_smoothed_pssm_feature_vectors(window_size))
         if AAindex:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_AAindex_feature_vectors(window_size))
         if secondary_structure:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_secondary_structure_feature_vectors(window_size))
-    return feature_vectors
+        negative_dataset += feature_vectors
+    return negative_dataset
 
 
 class FoldedDataset(object):

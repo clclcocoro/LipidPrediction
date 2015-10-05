@@ -45,7 +45,7 @@ def calculate_performance(correct_labels, predicted_labels):
             FP += 1
         else:
             raise ValueError("label must be 0 or 1. c {} p {}".format(c, p))
-    SE = calculate_SE(TP, TN)
+    SE = calculate_SE(TP, FN)
     SP = calculate_SP(TN, FP)
     ACC = calculate_ACC(TP, FP, TN, FN)
     MCC = calculate_MCC(TP, FP, TN, FN)

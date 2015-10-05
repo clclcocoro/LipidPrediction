@@ -62,6 +62,27 @@ def create_positive_dataset(protein_holder, window_size, original_pssm=False, ex
     return positive_dataset
 
 
+def create_negative_dataset_from_binding_proteins(protein_holder, window_size, original_pssm=False, exp_pssm=True, smoothed_pssm=True, exp_smoothed_pssm=True, AAindex=True, secondary_structure=True):
+    negative_dataset = []
+    for protein in protein_holder.positive_proteins:
+        feature_vectors = []
+        if original_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.non_bind_pssm_feature_vectors(window_size))
+        if exp_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.non_bind_exp_pssm_feature_vectors(window_size))
+        if smoothed_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.non_bind_smoothed_pssm_feature_vectors(window_size))
+        if exp_smoothed_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.non_bind_exp_smoothed_pssm_feature_vectors(window_size))
+        if AAindex:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.non_bind_AAindex_feature_vectors(window_size))
+        if secondary_structure:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.non_bind_secondary_structure_feature_vectors(window_size))
+        negative_dataset += feature_vectors
+
+    return negative_dataset
+
+
 def create_negative_dataset(protein_holder, window_size, original_pssm=False, exp_pssm=True, smoothed_pssm=True, exp_smoothed_pssm=True, AAindex=True, secondary_structure=True):
     negative_dataset = []
     for protein in protein_holder.negative_proteins:
@@ -80,6 +101,29 @@ def create_negative_dataset(protein_holder, window_size, original_pssm=False, ex
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_secondary_structure_feature_vectors(window_size))
         negative_dataset += feature_vectors
     return negative_dataset
+
+
+def create_test_dataset(protein_holder, window_size, original_pssm=False, exp_pssm=True, smoothed_pssm=True, exp_smoothed_pssm=True, AAindex=True, secondary_structure=True):
+    test_dataset = []
+    proteinid_index_list = []
+    for protein in protein_holder.negative_proteins:
+        feature_vectors = []
+        if original_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_pssm_feature_vectors(window_size))
+        if exp_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_exp_pssm_feature_vectors(window_size))
+        if smoothed_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_smoothed_pssm_feature_vectors(window_size))
+        if exp_smoothed_pssm:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_exp_smoothed_pssm_feature_vectors(window_size))
+        if AAindex:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_AAindex_feature_vectors(window_size))
+        if secondary_structure:
+            feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_secondary_structure_feature_vectors(window_size))
+        test_dataset += feature_vectors
+        proteinid_index_list += [(protein.proteinid, i) for i in xrange(len(feature_vectors))]
+    return test_dataset, proteinid_index_list
+
 
 
 class FoldedDataset(object):
@@ -120,6 +164,16 @@ class FoldedDataset(object):
 
     def get_folded_negative_dataset(self):
         return self.folded_negative_dataset
+
+    def get_training_dataset(self):
+        train_labels = [1] * self.positive_size + [0] * self.negative_size
+        positive_train_dataset = []
+        negative_train_dataset = []
+        for i in xrange(self.fold):
+            positive_train_dataset += self.folded_positive_dataset[i]
+            negative_train_dataset += self.folded_negative_dataset[i]
+        train_dataset = positive_train_dataset + negative_train_dataset
+        return train_labels, train_dataset
 
     def get_test_and_training_dataset(self, test_fold, undersampling_training_dataset=True):
         if test_fold < 0 or self.fold <= test_fold:

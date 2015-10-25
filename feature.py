@@ -2,6 +2,7 @@
 
 import re
 import math
+import warnings
 
 # AAindexes
 # 
@@ -109,11 +110,14 @@ class Protein(object):
     proteinid = '3K5H:A'
     """
 
-    def __init__(self, pssm_file, secondary_structure_file, binding_residue_file, smoothing_window_size=3):
+    def __init__(self, proteinid, pssm_file, secondary_structure_file, binding_residue_file, smoothing_window_size=3):
+        self.proteinid = proteinid
         self.pssm = self.parse_pssm_file(pssm_file)
+        self.sequence_length = len(self.pssm)
         self.secondary_structure = self.parse_secondary_structure_file(secondary_structure_file)
-        self.binding_record, self.sequence, self.proteinid = self.parse_binding_residue_file(binding_residue_file)
-        self.sequence_length = len(self.sequence)
+        self.binding_record, self.sequence = self.parse_binding_residue_file(binding_residue_file)
+        if len(self.sequence) != self.sequence_length:
+            warnings.warn("pssm length doesn't match bindres sequence length pssm_seqlen {} bindres_seqlen {} proteinid {}".format(len(self.pssm), self.sequence_length, self.proteinid), Warning)
         self.smoothing_window_size = smoothing_window_size
         self.smoothed_pssm = self.smoothe(smoothing_window_size)
         self.exp_pssm = [map(lambda x: 1/(1+math.exp(-x)), row) for row in self.pssm]
@@ -139,18 +143,17 @@ class Protein(object):
                     return line.rstrip()
 
     def parse_binding_residue_file(self, binding_residue_file):
-        proteinid = ''
         sequence = ''
         binding_record = ''
         with open(binding_residue_file) as fp:
             for line in fp:
                 if line[0] == '>':
-                    proteinid = line[1:].rstrip()
+                    continue
                 elif re.match(r'[A-Z]', line[0]): 
                     sequence = line.rstrip()
                 elif line[0] in {'0', '1'}:
                     binding_record = line.rstrip()
-        return binding_record, sequence, proteinid
+        return binding_record, sequence
 
     def init_smoothed_pssm(self, smoothing_window_size):
         self.smoothing_window_size = smoothing_window_size

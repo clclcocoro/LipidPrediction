@@ -1,0 +1,7 @@
+#proteinid	positive_or_negative	datatype	path
+PPPP:2	negative	bindres	/Users/clclcocoro/work/lipid_bindResPred/program/test_model_predict/bindres/PPPP:2.bindres
+PPPP:2	negative	pssm	/Users/clclcocoro/work/lipid_bindResPred/program/test_model_predict/pssm/PPPP:2.pssm
+PPPP:2	negative	secondary_structure	/Users/clclcocoro/work/lipid_bindResPred/program/test_model_predict/secondary_structure/PPPP:2.secondary_structure.txt
+NNNN:2	negative	bindres	/Users/clclcocoro/work/lipid_bindResPred/program/test_model_predict/bindres/NNNN:2.bindres
+NNNN:2	negative	pssm	/Users/clclcocoro/work/lipid_bindResPred/program/test_model_predict/pssm/NNNN:2.pssm
+NNNN:2	negative	secondary_structure	/Users/clclcocoro/work/lipid_bindResPred/program/test_model_predict/secondary_structure/NNNN:2.secondary_structure.txt

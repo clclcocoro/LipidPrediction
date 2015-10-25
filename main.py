@@ -4,7 +4,7 @@
 
 
 Usage:
-  main.py -d <data_path_file> -w <window_size> -s <smoothing_window_size> -o <output_log_file> [--original] [--exp] [--smoothed] [--exp_smoothed] [--aaindex] [--secondary_structure] [--only_positive_proteins]
+  main.py -d <data_path_file> -w <window_size> -s <smoothing_window_size> -o <output_log_file> [--original] [--exp] [--smoothed] [--exp_smoothed] [--aaindex] [--secondary_structure] [--only_positive_proteins] [--undersampling]
   main.py (-h | --help)
   main.py --version
 
@@ -20,6 +20,7 @@ Options:
   --aaindex                    Use AAindex as feature.
   --secondary_structure        Use secondary structure as feature.
   --only_positive_proteins     Negative dataset extracted from binding proteins.
+  --undersampling              Undersampling for speed.
   -h --help                    Show this screen.
   --version                    Show version.
 
@@ -49,7 +50,7 @@ import cross_validation
 
 
 def create_feature_info(window_size, smoothing_window_size, original, exp_pssm, smoothed_pssm, exp_smoothed_pssm, AAindex, secondary_structure):
-    return "w:{}, sw:{}, original_pssm:{}, exp_pssm:{}, smoothed_pssm:{}, exp_smoothed_pssm:{}, AAindex:{}, secondary_structure:{}".format(window_size, 
+    return "w:{}\tsw:{}\toriginal_pssm:{}\texp_pssm:{}\tsmoothed_pssm:{}\texp_smoothed_pssm:{}\tAAindex:{}\tsecondary_structure:{}".format(window_size, 
             smoothing_window_size, original, exp_pssm, smoothed_pssm, exp_smoothed_pssm, AAindex, secondary_structure)
 
 
@@ -57,10 +58,10 @@ def create_ProteinHolder(smoothing_window_size, data_filepath):
     protein_holder = dataset.ProteinHolder()
     for proteinid in data_filepath.positive_proteinids:
         filepaths = data_filepath.get_filepaths_of_protein(proteinid)
-        protein_holder.add_positive_protein(feature.Protein(filepaths['pssm'], filepaths['secondary_structure'], filepaths['bindres'], smoothing_window_size=smoothing_window_size))
+        protein_holder.add_positive_protein(feature.Protein(proteinid, filepaths['pssm'], filepaths['secondary_structure'], filepaths['bindres'], smoothing_window_size=smoothing_window_size))
     for proteinid in data_filepath.negative_proteinids:
         filepaths = data_filepath.get_filepaths_of_protein(proteinid)
-        protein_holder.add_negative_protein(feature.Protein(filepaths['pssm'], filepaths['secondary_structure'], filepaths['bindres'], smoothing_window_size=smoothing_window_size))
+        protein_holder.add_negative_protein(feature.Protein(proteinid, filepaths['pssm'], filepaths['secondary_structure'], filepaths['bindres'], smoothing_window_size=smoothing_window_size))
     return protein_holder
  
 
@@ -76,7 +77,6 @@ if __name__ == "__main__":
     arguments = docopt(__doc__)
     data_path_file         = arguments['<data_path_file>']
     log_file               = arguments['<output_log_file>']
-    decision_value_file    = arguments['<output_decision_value_file>']
     window_size            = int(arguments['<window_size>'])
     smoothing_window_size  = int(arguments['<smoothing_window_size>'])
     original_pssm          = arguments['--original']
@@ -86,11 +86,12 @@ if __name__ == "__main__":
     AAindex                = arguments['--aaindex']
     secondary_structure    = arguments['--secondary_structure']
     only_positive_proteins = arguments['--only_positive_proteins']
-    undersampling          = False
+    #undersampling          = True
+    undersampling          = arguments['--undersampling']
     shuffle                = True
     fold                   = 5
     cost_range             = (0, 5) # 2**this_integer
-    gamma_range            = (-9, -3) # 2**this_integer
+    gamma_range            = (-7, 0) # 2**this_integer
 
     # Normalizing AAindex.
     feature.normalize_AAindex()
@@ -104,6 +105,8 @@ if __name__ == "__main__":
                                                        AAindex=AAindex, secondary_structure=secondary_structure)
     if only_positive_proteins:
         negative_dataset = dataset.create_negative_dataset_from_binding_proteins(protein_holder, window_size, original_pssm=original_pssm,
+                                                       exp_pssm=exp_pssm, smoothed_pssm=smoothed_pssm, exp_smoothed_pssm=exp_smoothed_pssm,
+                                                       AAindex=AAindex, secondary_structure=secondary_structure)
     else:
         negative_dataset = dataset.create_negative_dataset(protein_holder, window_size, original_pssm=original_pssm,
                                                        exp_pssm=exp_pssm, smoothed_pssm=smoothed_pssm, exp_smoothed_pssm=exp_smoothed_pssm,

@@ -106,7 +106,7 @@ def create_negative_dataset(protein_holder, window_size, original_pssm=False, ex
 def create_test_dataset(protein_holder, window_size, original_pssm=False, exp_pssm=True, smoothed_pssm=True, exp_smoothed_pssm=True, AAindex=True, secondary_structure=True):
     test_dataset = []
     proteinid_index_list = []
-    for protein in protein_holder.negative_proteins:
+    for protein in protein_holder.positive_proteins:
         feature_vectors = []
         if original_pssm:
             feature_vectors = concatnate_feature_vector_list(feature_vectors, protein.all_pssm_feature_vectors(window_size))

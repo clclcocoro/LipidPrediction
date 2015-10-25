@@ -42,6 +42,8 @@ The order of rows doesn't matter.
 """
 
 from docopt import docopt
+from sklearn import svm
+import numpy
 import filepath
 import feature
 import dataset
@@ -57,10 +59,10 @@ def create_ProteinHolder(smoothing_window_size, data_filepath):
     protein_holder = dataset.ProteinHolder()
     for proteinid in data_filepath.positive_proteinids:
         filepaths = data_filepath.get_filepaths_of_protein(proteinid)
-        protein_holder.add_positive_protein(feature.Protein(filepaths['pssm'], filepaths['secondary_structure'], filepaths['bindres'], smoothing_window_size=smoothing_window_size))
+        protein_holder.add_positive_protein(feature.Protein(proteinid, filepaths['pssm'], filepaths['secondary_structure'], filepaths['bindres'], smoothing_window_size=smoothing_window_size))
     for proteinid in data_filepath.negative_proteinids:
         filepaths = data_filepath.get_filepaths_of_protein(proteinid)
-        protein_holder.add_negative_protein(feature.Protein(filepaths['pssm'], filepaths['secondary_structure'], filepaths['bindres'], smoothing_window_size=smoothing_window_size))
+        protein_holder.add_negative_protein(feature.Protein(proteinid, filepaths['pssm'], filepaths['secondary_structure'], filepaths['bindres'], smoothing_window_size=smoothing_window_size))
     return protein_holder
  
 
@@ -94,7 +96,6 @@ if __name__ == "__main__":
     decision_values = clf.decision_function(test_dataset)
     if type(decision_values[0]) is list or type(decision_values[0]) is numpy.ndarray:
         decision_values = map(lambda x: x[0], decision_values)
-    else:
-        predicted_labels = clf.predict(test_dataset)
+    predicted_labels = clf.predict(test_dataset)
 
     write_to_output_file(output_file, decision_values, predicted_labels, proteinid_index_list)
